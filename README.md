@@ -4,6 +4,8 @@ Simple composite action for deploying an image to AWS ECR
 
 ## Usage
 
+For all possible inputs and description of inputs, see `action.yml`
+
 The most common case will be to tag and deploy an image by pushing a git tag (or creating a release
 that creates a git tag)
 
