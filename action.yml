@@ -1,0 +1,44 @@
+name: 'Deploy Common Service'
+description: 'Action for deploying common reusable services (such as n8n, nocodb, etc.)'
+inputs:
+  service-key:
+    description: 'The keyname of the reusable service. e.g., "n8n", "nocodb" etc.'
+    required: true
+  account:
+    description: 'The AWS account to use'
+    required: true
+  region:
+    description: 'The AWS region to use'
+    default: 'us-east-1'
+  source-image:
+    description: 'The name/tag of the local image that was built to be pushed to ecr (e.g., the `-t` argument used for docker build)'
+    required: true
+  tag:
+    description: 'The image will be tagged with this tag when pushed to ECR'
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.account }}:role/${{ inputs.service-key }}-deploy-role
+        role-session-name: github-actions-${{ github.run_id }}-${{ github.run_number }}
+        role-skip-session-tagging: true
+        role-duration-seconds: 3600
+        aws-region: ${{ inputs.region }}
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ inputs.service-key }}/${{ inputs.service-key}}
+        TAG: ${{ inputs.tag }}
+      run: |
+        docker tag ${{ inputs.source-image }} $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
