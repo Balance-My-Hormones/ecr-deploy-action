@@ -9,7 +9,7 @@ inputs:
     required: true
   region:
     description: 'The AWS region to use'
-    default: 'us-east-1'
+    default: 'eu-west-2'
   source-image:
     description: 'The name/tag of the local image that was built to be pushed to ecr (e.g., the `-t` argument used for docker build)'
     required: true
