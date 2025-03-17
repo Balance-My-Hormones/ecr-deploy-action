@@ -30,10 +30,10 @@ jobs:
         # You implement this as necessary. This is a simple example
         docker build -t "${{ github.ref_name }}"  .
     - name: push ecr
-      uses: Deep-Consulting-Solutions/ecr-deploy-action@main
+      uses: Balance-My-Hormones/ecr-deploy-action@main
       with:
         service-key: 'n8n' # or whatever the reusable service key is
-        account: ${{ secrets.DCS_AWS_ACCOUNT }}
+        account: ${{ secrets.BMH_AWS_ACCOUNT }}
         source-image: ${{ github.ref_name }}
         tag: ${{ github.ref_name }}
     
